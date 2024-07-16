@@ -41,8 +41,8 @@ jobs:
           path: ./artifacts/${{env.PROJECT_NAME}}.jar
 
 
-env:
-  PROJECT_NAME: HelloWorld
-  PROJECT_VERSION: 0.0.1
-  MAVEN_VERSION: 3.8.5
-  JAVA_VERSION: 17
+# env:
+#   PROJECT_NAME: HelloWorld
+#   PROJECT_VERSION: 0.0.1
+#   MAVEN_VERSION: 3.8.5
+#   JAVA_VERSION: 17
