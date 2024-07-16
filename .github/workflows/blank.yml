@@ -13,24 +13,48 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  build-and-sign-jar:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    name: code signer on Java with Maven
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - uses: actions/checkout@v2
+      - name: Install Maven and Java
+       
+        with:
+          java-version: '${{env.JAVA_VERSION}}'
+          maven-version: '${{env.MAVEN_VERSION}}'
+      - name: Create Directory
+        shell: bash
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          mkdir ${GITHUB_WORKSPACE}/artifacts
+          mkdir ${GITHUB_WORKSPACE}/packages
+      - name: Build Java Project
+        shell: bash
+        run: |
+          mvn clean install -f java/pom.xml
+          cp java/target/${{env.PROJECT_NAME}}-${{env.PROJECT_VERSION}}.jar ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
+
+      - name: Sign Artifact
+        uses: sslcom/actions-codesigner@develop
+        with:
+          command: sign
+          username: ${{secrets.ES_USERNAME}}
+          password: ${{secrets.ES_PASSWORD}}
+          credential_id: ${{secrets.CREDENTIAL_ID}}
+          totp_secret: ${{secrets.ES_TOTP_SECRET}}
+          file_path: ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
+          output_path: ${GITHUB_WORKSPACE}/artifacts
+
+      - name: Upload Signed Files
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{env.PROJECT_NAME}}.jar
+          path: ./artifacts/${{env.PROJECT_NAME}}.jar
+
+
+env:
+  PROJECT_NAME: HelloWorld
+  PROJECT_VERSION: 0.0.1
+  MAVEN_VERSION: 3.8.5
+  JAVA_VERSION: 17
