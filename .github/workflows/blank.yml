@@ -26,7 +26,7 @@ jobs:
       - name: Build Java Project
         shell: bash
         run: |
-          mvn clean install -f pom.xml
+          mvn clean install -f java/pom.xml
           cp java/target/${{env.PROJECT_NAME}}-${{env.PROJECT_VERSION}}.jar ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
 
       - name: Sign Artifact
