@@ -1,72 +1,3 @@
-# name : Maven Build and Sign
-# on : [push]
-
-# env:
-#   PROJECT_NAME: HelloWorld
-#   PROJECT-VERSION: 0.0.1
-
-# jobs:
-#   build-and-sign-jar:
-#     runs-on: ubuntu-latest
-#     name: code signer on Java with Maven
-#     steps:
-#       - name: Checkout Repository
-#         uses: actions/checkout@v2
-        
-#       - name: Setup Maven and Java
-#         uses: s4u/setup-maven-action@v1.3.1
-#         with:
-#           java-version: 17
-#           maven-version: 3.8.5
-           
-#       - name: Create Directory
-#         shell: bash
-#         run: |
-# #           mkdir -p artifacts
-#             mkdir -p packages
-#             mkdir -p certs
-          
-#       - name: Build Java Project
-#         shell: bash
-#         run: |
-#           mvn clean install -f pom.xml
-#           # cp target/${{env.PROJECT_NAME}}-${{env.PROJECT_VERSION}}.jar ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
-#           cp target/HelloWorld-0.0.1-SNAPSHOT.jar packages/HelloWorld.jar
-
-      # - name: Sign Artifact
-      #   uses: sslcom/actions-codesigner@develop
-      #   with:
-      #     command: sign
-      #     username: example_username
-      #     password: example_password
-      #     credential_id: example_credential_id
-      #     totp_secret: example_totp_secret
-      #     file_path: ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
-      #     output_path: ${GITHUB_WORKSPACE}/artifacts
-
-      # - name: Upload Signed Files
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: ${{env.PROJECT_NAME}}.jar
-      #     path: ./artifacts/${{env.PROJECT_NAME}}.jar
-
-      # - name: Generate Keystore
-      #   run: |
-      #     keytool -genkeypair -alias myalias -keyalg RSA -keysize 2048 -validity 3650 -storetype PKCS12 -keystore keystore.p12 -storepass your_password -keypass your_password -dname "CN=Your Name, OU=Your Organization, O=Your Company, L=Your City, ST=Your State, C=Your Country"
-      #     openssl pkcs12 -in keystore.p12 -out keystore.jks -nodes -password pass:your_password
-      #     cp keystore.jks $GITHUB_WORKSPACE/artifacts/keystore.jks
-
-      # - name: Sign JAR File
-      #   run: |
-      #     jarsigner -keystore $GITHUB_WORKSPACE/artifacts/keystore.jks -storepass your_password -keypass your_password $GITHUB_WORKSPACE/packages/HelloWorld.jar myalias
-
-
-# env:
-#   PROJECT_NAME: HelloWorld
-#   PROJECT_VERSION: 0.0.1
-#   MAVEN_VERSION: 3.8.5
-#   JAVA_VERSION: 17
- 
 name: Maven Build and Sign
 on:
   push:
@@ -116,35 +47,6 @@ jobs:
         run: |
           openssl x509 -req -days 365 -in certs/request.csr -signkey certs/private.key -out certs/self-signed-certificate.crt
 
-      - name: Upload Self-Signed Certificate
-        uses: actions/upload-artifact@v2
-        with:
-          name: self-signed-certificate.crt
-          path: certs/self-signed-certificate.crt
-
-      - name: Upload CSR
-        uses: actions/upload-artifact@v2
-        with:
-          name: request.csr
-          path: certs/request.csr
-
-      - name: Upload Private Key
-        uses: actions/upload-artifact@v2
-        with:
-          name: private.key
-          path: certs/private.key
-
-      # - name: Sign Artifact
-      #   uses: sslcom/actions-codesigner@develop
-      #   with:
-      #     command: sign
-      #     username: example_username
-      #     password: example_password
-      #     credential_id: example_credential_id
-      #     totp_secret: example_totp_secret
-      #     file_path: ${GITHUB_WORKSPACE}/packages/HelloWorld.jar
-      #     output_path: ${GITHUB_WORKSPACE}/artifacts
-
       - name: Create Java Keystore
         run: |
           keytool -genkeypair -alias myalias -keyalg RSA -keysize 2048 -validity 3650 -keystore certs/keystore.jks -storepass changeit -keypass changeit -dname "CN=Your Name, OU=Your Organization, O=Your Company, L=Your City, ST=Your State, C=Your Country"
@@ -152,7 +54,6 @@ jobs:
       - name: Sign JAR
         run: |
           jarsigner -keystore certs/keystore.jks -storepass changeit -keypass changeit packages/HelloWorld.jar myalias
-
 
       - name: Verify JAR Signature
         run: |
