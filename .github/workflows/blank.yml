@@ -68,7 +68,7 @@
 
 
 ##### Harman code 
-name: Maven Build and Sign
+ame: Maven Build and Sign
 on:
   push:
     branches:
@@ -110,3 +110,17 @@ jobs:
       - name: Sign JAR File
         run: |
           jarsigner -keystore artifacts/keystore.jks -storepass your_password -keypass your_password packages/HelloWorld.jar myalias
+
+      - name: Verify JAR Signature
+        run: |
+          jarsigner -verify -keystore artifacts/keystore.jks -storepass your_password packages/HelloWorld.jar
+
+      - name: List Keystore Contents
+        run: |
+          keytool -list -keystore artifacts/keystore.jks -storepass your_password
+
+      - name: Archive Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: signed-jar-artifacts
+          path: packages/HelloWorld.jar
