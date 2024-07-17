@@ -14,20 +14,27 @@ jobs:
         uses: actions/checkout@v2
         
       - name: Setup Maven and Java
-        uses: s4u/setup-maven-action@v1.3.1
+        uses: actions/setup-java@v2
         with:
-          java-version: 17
-          maven-version: 3.8.5
+          distribution: 'adopt'
+          java-version: '17'
+          
+      - name: Setup Maven
+        uses: s4u/setup-maven-action@v1.3.1
+        with: 
+           maven-version: 3.8.5
+           
       - name: Create Directory
         shell: bash
         run: |
           mkdir ${GITHUB_WORKSPACE}/artifacts
           mkdir ${GITHUB_WORKSPACE}/packages
+          
       - name: Build Java Project
         shell: bash
         run: |
           mvn clean install -f code-signing/pom.xml
-          cp java/target/${{env.PROJECT_NAME}}-${{env.PROJECT_VERSION}}.jar ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
+          cp target/${{env.PROJECT_NAME}}-${{env.PROJECT_VERSION}}.jar ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
 
       - name: Sign Artifact
         uses: sslcom/actions-codesigner@develop
