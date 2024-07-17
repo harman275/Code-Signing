@@ -154,8 +154,18 @@ jobs:
           jarsigner -keystore certs/keystore.jks -storepass changeit -keypass changeit packages/HelloWorld.jar myalias
 
 
+      - name: Verify JAR Signature
+        run: |
+          jarsigner -verify packages/HelloWorld.jar
+
+      - name: Upload Signed JAR File
+        uses: actions/upload-artifact@v2
+        with:
+          name: HelloWorld.jar
+          path: packages/HelloWorld.jar
+
       - name: Upload Signed Files
         uses: actions/upload-artifact@v2
         with:
           name: HelloWorld.jar
-          path: ./artifacts/HelloWorld.jar
+          path: packages/HelloWorld.jar
