@@ -32,22 +32,32 @@ jobs:
           # cp target/${{env.PROJECT_NAME}}-${{env.PROJECT_VERSION}}.jar ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
           cp target/HelloWorld-0.0.1-SNAPSHOT.jar ${GITHUB_WORKSPACE}/packages/HelloWorld.jar
 
-      - name: Sign Artifact
-        uses: sslcom/actions-codesigner@develop
-        with:
-          command: sign
-          username: ${{secrets.ES_USERNAME}}
-          password: ${{secrets.ES_PASSWORD}}
-          credential_id: ${{secrets.CREDENTIAL_ID}}
-          totp_secret: ${{secrets.ES_TOTP_SECRET}}
-          file_path: ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
-          output_path: ${GITHUB_WORKSPACE}/artifacts
+      # - name: Sign Artifact
+      #   uses: sslcom/actions-codesigner@develop
+      #   with:
+      #     command: sign
+      #     username: ${{secrets.ES_USERNAME}}
+      #     password: ${{secrets.ES_PASSWORD}}
+      #     credential_id: ${{secrets.CREDENTIAL_ID}}
+      #     totp_secret: ${{secrets.ES_TOTP_SECRET}}
+      #     file_path: ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
+      #     output_path: ${GITHUB_WORKSPACE}/artifacts
 
-      - name: Upload Signed Files
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{env.PROJECT_NAME}}.jar
-          path: ./artifacts/${{env.PROJECT_NAME}}.jar
+      # - name: Upload Signed Files
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: ${{env.PROJECT_NAME}}.jar
+      #     path: ./artifacts/${{env.PROJECT_NAME}}.jar
+
+      - name: Generate Keystore
+        run: |
+          keytool -genkeypair -alias myalias -keyalg RSA -keysize 2048 -validity 3650 -storetype PKCS12 -keystore keystore.p12 -storepass your_password -keypass your_password -dname "CN=Your Name, OU=Your Organization, O=Your Company, L=Your City, ST=Your State, C=Your Country"
+          openssl pkcs12 -in keystore.p12 -out keystore.jks -nodes -password pass:your_password
+          cp keystore.jks $GITHUB_WORKSPACE/artifacts/keystore.jks
+
+      - name: Sign JAR File
+        run: |
+          jarsigner -keystore $GITHUB_WORKSPACE/artifacts/keystore.jks -storepass your_password -keypass your_password $GITHUB_WORKSPACE/packages/HelloWorld.jar myalias
 
 
 # env:
