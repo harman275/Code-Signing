@@ -22,15 +22,16 @@
 #       - name: Create Directory
 #         shell: bash
 #         run: |
-#           mkdir ${GITHUB_WORKSPACE}/artifacts
-#           mkdir ${GITHUB_WORKSPACE}/packages
+#           mkdir -p artifacts
+            mkdir -p packages
+            mkdir -p certs
           
 #       - name: Build Java Project
 #         shell: bash
 #         run: |
 #           mvn clean install -f pom.xml
 #           # cp target/${{env.PROJECT_NAME}}-${{env.PROJECT_VERSION}}.jar ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
-#           cp target/HelloWorld-0.0.1-SNAPSHOT.jar ${GITHUB_WORKSPACE}/packages/HelloWorld.jar
+#           cp target/HelloWorld-0.0.1-SNAPSHOT.jar packages/HelloWorld.jar
 
       # - name: Sign Artifact
       #   uses: sslcom/actions-codesigner@develop
@@ -65,15 +66,13 @@
 #   PROJECT_VERSION: 0.0.1
 #   MAVEN_VERSION: 3.8.5
 #   JAVA_VERSION: 17
-
-
-##### Harman code 
+ 
 name: Maven Build and Sign
 on:
   push:
     branches:
       - main
-
+      
 env:
   PROJECT_NAME: HelloWorld
   PROJECT_VERSION: 0.0.1
@@ -96,6 +95,7 @@ jobs:
         run: |
           mkdir -p artifacts
           mkdir -p packages
+          mkdir -p certs
 
       - name: Build Java Project
         run: |
@@ -104,7 +104,7 @@ jobs:
 
       - name: Generate Private Key
         run: |
-          openssl genpkey -algorithm RSA -out ${GITHUB_WORKSPACE}/certs/private.key -pkeyopt rsa_keygen_bits:2048
+          openssl genpkey -algorithm RSA -out /certs/private.key -pkeyopt rsa_keygen_bits:2048
 
       - name: Generate CSR
         run: |
@@ -114,25 +114,25 @@ jobs:
 
       - name: Self-Sign CSR to create self-signed certificate
         run: |
-          openssl x509 -req -days 365 -in ${GITHUB_WORKSPACE}/certs/request.csr -signkey ${GITHUB_WORKSPACE}/certs/private.key -out ${GITHUB_WORKSPACE}/certs/self-signed-certificate.crt
+          openssl x509 -req -days 365 -in certs/request.csr -signkey certs/private.key -out certs/self-signed-certificate.crt
 
       - name: Upload Self-Signed Certificate
         uses: actions/upload-artifact@v2
         with:
           name: self-signed-certificate.crt
-          path: ${GITHUB_WORKSPACE}/certs/self-signed-certificate.crt
+          path: certs/self-signed-certificate.crt
 
       - name: Upload CSR
         uses: actions/upload-artifact@v2
         with:
           name: request.csr
-          path: ${GITHUB_WORKSPACE}/certs/request.csr
+          path: certs/request.csr
 
       - name: Upload Private Key
         uses: actions/upload-artifact@v2
         with:
           name: private.key
-          path: ${GITHUB_WORKSPACE}/certs/private.key
+          path: certs/private.key
 
       - name: Sign Artifact
         uses: sslcom/actions-codesigner@develop
