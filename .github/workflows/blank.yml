@@ -134,16 +134,25 @@ jobs:
           name: private.key
           path: certs/private.key
 
-      - name: Sign Artifact
-        uses: sslcom/actions-codesigner@develop
-        with:
-          command: sign
-          username: example_username
-          password: example_password
-          credential_id: example_credential_id
-          totp_secret: example_totp_secret
-          file_path: ${GITHUB_WORKSPACE}/packages/HelloWorld.jar
-          output_path: ${GITHUB_WORKSPACE}/artifacts
+      # - name: Sign Artifact
+      #   uses: sslcom/actions-codesigner@develop
+      #   with:
+      #     command: sign
+      #     username: example_username
+      #     password: example_password
+      #     credential_id: example_credential_id
+      #     totp_secret: example_totp_secret
+      #     file_path: ${GITHUB_WORKSPACE}/packages/HelloWorld.jar
+      #     output_path: ${GITHUB_WORKSPACE}/artifacts
+
+      - name: Create Java Keystore
+        run: |
+          keytool -genkeypair -alias myalias -keyalg RSA -keysize 2048 -validity 3650 -keystore certs/keystore.jks -storepass changeit -keypass changeit -dname "CN=Your Name, OU=Your Organization, O=Your Company, L=Your City, ST=Your State, C=Your Country"
+
+      - name: Sign JAR
+        run: |
+          jarsigner -keystore certs/keystore.jks -storepass changeit -keypass changeit packages/HelloWorld.jar myalias
+
 
       - name: Upload Signed Files
         uses: actions/upload-artifact@v2
