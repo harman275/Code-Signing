@@ -68,7 +68,7 @@
 
 
 ##### Harman code 
-ame: Maven Build and Sign
+name: Maven Build and Sign
 on:
   push:
     branches:
