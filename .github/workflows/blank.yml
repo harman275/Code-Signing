@@ -37,10 +37,10 @@
       #   uses: sslcom/actions-codesigner@develop
       #   with:
       #     command: sign
-      #     username: ${{secrets.ES_USERNAME}}
-      #     password: ${{secrets.ES_PASSWORD}}
-      #     credential_id: ${{secrets.CREDENTIAL_ID}}
-      #     totp_secret: ${{secrets.ES_TOTP_SECRET}}
+      #     username: example_username
+      #     password: example_password
+      #     credential_id: example_credential_id
+      #     totp_secret: example_totp_secret
       #     file_path: ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
       #     output_path: ${GITHUB_WORKSPACE}/artifacts
 
