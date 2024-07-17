@@ -29,8 +29,8 @@ jobs:
         shell: bash
         run: |
           mvn clean install -f pom.xml
-          # cp ./target/${{env.PROJECT_NAME}}-${{env.PROJECT_VERSION}}.jar ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
-          cp target/HelloWorld-0.0.1-SNAPSHOT.jar ${GITHUB_WORKSPACE}/packages/HelloWorld.jar
+          cp target/${{env.PROJECT_NAME}}-${{env.PROJECT_VERSION}}.jar ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
+          # cp target/HelloWorld-0.0.1-SNAPSHOT.jar ${GITHUB_WORKSPACE}/packages/HelloWorld.jar
 
       - name: Sign Artifact
         uses: sslcom/actions-codesigner@develop
