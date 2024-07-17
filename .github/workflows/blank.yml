@@ -102,25 +102,49 @@ jobs:
           mvn clean install -f pom.xml
           cp target/HelloWorld-0.0.1-SNAPSHOT.jar packages/HelloWorld.jar
 
-      - name: Generate Keystore
+      - name: Generate Private Key
         run: |
-          keytool -genkeypair -alias myalias -keyalg RSA -keysize 2048 -validity 3650 -storetype PKCS12 -keystore artifacts/keystore.p12 -storepass your_password -keypass your_password -dname "CN=Your Name, OU=Your Organization, O=Your Company, L=Your City, ST=Your State, C=Your Country"
-          openssl pkcs12 -in artifacts/keystore.p12 -out artifacts/keystore.jks -nodes -password pass:your_password
+          openssl genpkey -algorithm RSA -out ${GITHUB_WORKSPACE}/certs/private.key -pkeyopt rsa_keygen_bits:2048
 
-      - name: Sign JAR File
+      - name: Generate CSR
         run: |
-          jarsigner -keystore artifacts/keystore.jks -storepass your_password -keypass your_password packages/HelloWorld.jar myalias
+          openssl req -new -key ${GITHUB_WORKSPACE}/certs/private.key -out ${GITHUB_WORKSPACE}/certs/request.csr -subj "/C=US/ST=California/L=San Francisco/O=Example Company/OU=IT Department/CN=example.com"
 
-      - name: Verify JAR Signature
+      - name: Self-Sign CSR to create self-signed certificate
         run: |
-          jarsigner -verify -keystore artifacts/keystore.jks -storepass your_password packages/HelloWorld.jar
+          openssl x509 -req -days 365 -in ${GITHUB_WORKSPACE}/certs/request.csr -signkey ${GITHUB_WORKSPACE}/certs/private.key -out ${GITHUB_WORKSPACE}/certs/self-signed-certificate.crt
 
-      - name: List Keystore Contents
-        run: |
-          keytool -list -keystore artifacts/keystore.jks -storepass your_password
-
-      - name: Archive Artifacts
+      - name: Upload Self-Signed Certificate
         uses: actions/upload-artifact@v2
         with:
-          name: signed-jar-artifacts
-          path: packages/HelloWorld.jar
+          name: self-signed-certificate.crt
+          path: ${GITHUB_WORKSPACE}/certs/self-signed-certificate.crt
+
+      - name: Upload CSR
+        uses: actions/upload-artifact@v2
+        with:
+          name: request.csr
+          path: ${GITHUB_WORKSPACE}/certs/request.csr
+
+      - name: Upload Private Key
+        uses: actions/upload-artifact@v2
+        with:
+          name: private.key
+          path: ${GITHUB_WORKSPACE}/certs/private.key
+
+      - name: Sign Artifact
+        uses: sslcom/actions-codesigner@develop
+        with:
+          command: sign
+          username: ${{secrets.ES_USERNAME}}
+          password: ${{secrets.ES_PASSWORD}}
+          credential_id: ${{secrets.CREDENTIAL_ID}}
+          totp_secret: ${{secrets.ES_TOTP_SECRET}}
+          file_path: ${GITHUB_WORKSPACE}/packages/HelloWorld.jar
+          output_path: ${GITHUB_WORKSPACE}/artifacts
+
+      - name: Upload Signed Files
+        uses: actions/upload-artifact@v2
+        with:
+          name: HelloWorld.jar
+          path: ./artifacts/HelloWorld.jar
