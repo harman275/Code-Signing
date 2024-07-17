@@ -22,9 +22,9 @@
 #       - name: Create Directory
 #         shell: bash
 #         run: |
-#           mkdir -p artifacts
-            mkdir -p packages
-            mkdir -p certs
+# #           mkdir -p artifacts
+#             mkdir -p packages
+#             mkdir -p certs
           
 #       - name: Build Java Project
 #         shell: bash
