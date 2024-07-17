@@ -108,10 +108,10 @@ jobs:
 
       - name: Generate CSR
         run: |
-         keytool -genkeypair -alias myalias -keyalg RSA -keysize 2048 -validity 3650 -storetype PKCS12 -keystore artifacts/keystore.p12 -storepass your_password -keypass your_password -dname "CN=Your Name, OU=Your Organization, O=Your Company, L=Your City, ST=Your State, C=Your Country"
-          openssl pkcs12 -in artifacts/keystore.p12 -out artifacts/keystore.jks -nodes -password pass:your_password
-          # openssl req -new -key ${GITHUB_WORKSPACE}/certs/private.key -out ${GITHUB_WORKSPACE}/certs/request.csr -subj "/C=US/ST=California/L=San Francisco/O=Example Company/OU=IT Department/CN=example.com"
-
+         # keytool -genkeypair -alias myalias -keyalg RSA -keysize 2048 -validity 3650 -storetype PKCS12 -keystore artifacts/keystore.p12 -storepass your_password -keypass your_password -dname "CN=Your Name, OU=Your Organization, O=Your Company, L=Your City, ST=Your State, C=Your Country"
+         #  openssl pkcs12 -in artifacts/keystore.p12 -out artifacts/keystore.jks -nodes -password pass:your_password
+          openssl req -new -key certs/private.key -out certs/request.csr -subj "/C=US/ST=California/L=San Francisco/O=Example Company/OU=IT Department/CN=example.com"
+          # openssl req -new -key certs/private.key -out certs/request.csr -subj "/C=US/ST=California/L=San Francisco/O=Example Company/OU=IT Department/CN=example.com"
       - name: Self-Sign CSR to create self-signed certificate
         run: |
           openssl x509 -req -days 365 -in certs/request.csr -signkey certs/private.key -out certs/self-signed-certificate.crt
