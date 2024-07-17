@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           mvn clean install -f pom.xml
-          cp target/${{env.PROJECT_NAME}}-${{env.PROJECT_VERSION}}.jar ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
+          cp java/target/${{env.PROJECT_NAME}}-${{env.PROJECT_VERSION}}.jar ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
 
       - name: Sign Artifact
         uses: sslcom/actions-codesigner@develop
