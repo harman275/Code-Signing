@@ -32,22 +32,22 @@ jobs:
           # cp target/${{env.PROJECT_NAME}}-${{env.PROJECT_VERSION}}.jar ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
           cp target/HelloWorld-0.0.1-SNAPSHOT.jar ${GITHUB_WORKSPACE}/packages/HelloWorld.jar
 
-      - name: Sign Artifact
-        uses: sslcom/actions-codesigner@develop
-        with:
-          command: sign
-          username: ${{secrets.ES_USERNAME}}
-          password: ${{secrets.ES_PASSWORD}}
-          credential_id: ${{secrets.CREDENTIAL_ID}}
-          totp_secret: ${{secrets.ES_TOTP_SECRET}}
-          file_path: ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
-          output_path: ${GITHUB_WORKSPACE}/artifacts
+      # - name: Sign Artifact
+      #   uses: sslcom/actions-codesigner@develop
+      #   with:
+      #     command: sign
+      #     username: ${{secrets.ES_USERNAME}}
+      #     password: ${{secrets.ES_PASSWORD}}
+      #     credential_id: ${{secrets.CREDENTIAL_ID}}
+      #     totp_secret: ${{secrets.ES_TOTP_SECRET}}
+      #     file_path: ${GITHUB_WORKSPACE}/packages/${{env.PROJECT_NAME}}.jar
+      #     output_path: ${GITHUB_WORKSPACE}/artifacts
 
-      - name: Upload Signed Files
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{env.PROJECT_NAME}}.jar
-          path: ./artifacts/${{env.PROJECT_NAME}}.jar
+      # - name: Upload Signed Files
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: ${{env.PROJECT_NAME}}.jar
+      #     path: ./artifacts/${{env.PROJECT_NAME}}.jar
 
 
 # env:
