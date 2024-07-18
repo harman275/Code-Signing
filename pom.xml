@@ -41,10 +41,10 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>${exe4j9.path}</executable>
+                            <executable>${exe4j.path}</executable>
                             <arguments>
                                 <argument>-c</argument>
-                                <argument>exe4j9-config.xml</argument>
+                                <argument>exe4j-config.xml</argument>
                             </arguments>
                         </configuration>
                     </execution>
