@@ -22,40 +22,6 @@ jobs:
           java-version: 17
           maven-version: 3.8.5
 
-      - name: Create Directories
-        run: |
-          mkdir -p artifacts
-          mkdir -p packages
-          mkdir -p certs
-
-      - name: Build Java Project
-        run: |
-          mvn clean package
-
-      - name: Generate Private Key
-        run: |
-          openssl genpkey -algorithm RSA -out certs/private.key -pkeyopt rsa_keygen_bits:2048
-
-      - name: Generate CSR
-        run: |
-          openssl req -new -key certs/private.key -out certs/request.csr -subj "/C=US/ST=California/L=San Francisco/O=Example Company/OU=IT Department/CN=example.com"
-      
-      - name: Self-Sign CSR to create self-signed certificate
-        run: |
-          openssl x509 -req -days 180 -in certs/request.csr -signkey certs/private.key -out certs/self-signed-certificate.crt
-
-      - name: Create Java Keystore
-        run: |
-          keytool -genkeypair -alias myalias -keyalg RSA -keysize 2048 -validity 180 -keystore certs/keystore.jks -storepass changeit -keypass changeit -dname "CN=Your Name, OU=Your Organization, O=Your Company, L=Your City, ST=Your State, C=Your Country"
-
-      - name: Sign JAR
-        run: |
-          jarsigner -keystore certs/keystore.jks -storepass changeit -keypass changeit target/HelloWorld-0.0.1-SNAPSHOT.jar myalias
-
-      - name: Verify JAR Signature
-        run: |
-          jarsigner -verify target/HelloWorld-0.0.1-SNAPSHOT.jar
-
       - name: Install Exe4j
         run: |
           wget https://download-gcdn.ej-technologies.com/exe4j/exe4j_linux_9_0.tar.gz
@@ -65,9 +31,8 @@ jobs:
       - name: Set Exe4j Path
         run: echo "EXE4J_PATH=/opt/exe4j/bin/exe4jconfig" >> $GITHUB_ENV
 
-      - name: Create Executable with Exe4j
-        run: |
-          mvn -Dexe4j.path=/opt/exe4j/bin/exe4jconfig clean package
+      - name: Build Project and Create Executable
+        run: mvn -Dexe4j.path=$EXE4J_PATH clean package
 
       - name: Upload Executable File
         uses: actions/upload-artifact@v2
