@@ -26,7 +26,7 @@ jobs:
         run: |
           mkdir -p artifacts
           mkdir -p packages
-          # mkdir -p certs
+          mkdir -p certs
 
       - name: Build Java Project
         run: |
@@ -43,11 +43,11 @@ jobs:
       
       - name: Self-Sign CSR to create self-signed certificate
         run: |
-          openssl x509 -req -days 365 -in certs/request.csr -signkey certs/private.key -out certs/self-signed-certificate.crt
+          openssl x509 -req -days 180 -in certs/request.csr -signkey certs/private.key -out certs/self-signed-certificate.crt
 
       - name: Create Java Keystore
         run: |
-          keytool -genkeypair -alias myalias -keyalg RSA -keysize 2048 -validity 3650 -keystore certs/keystore.jks -storepass changeit -keypass changeit -dname "CN=Your Name, OU=Your Organization, O=Your Company, L=Your City, ST=Your State, C=Your Country"
+          keytool -genkeypair -alias myalias -keyalg RSA -keysize 2048 -validity 180 -keystore certs/keystore.jks -storepass changeit -keypass changeit -dname "CN=Your Name, OU=Your Organization, O=Your Company, L=Your City, ST=Your State, C=Your Country"
 
       - name: Sign JAR
         run: |
@@ -63,8 +63,8 @@ jobs:
           name: HelloWorld.jar
           path: packages/HelloWorld.jar
 
-      - name: Upload Signed Files
-        uses: actions/upload-artifact@v2
-        with:
-          name: HelloWorld.jar
-          path: packages/HelloWorld.jar
+      # - name: Upload Signed Files
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: HelloWorld.jar
+      #     path: packages/HelloWorld.jar
