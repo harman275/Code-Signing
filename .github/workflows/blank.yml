@@ -22,6 +22,11 @@ jobs:
           java-version: 17
           maven-version: 3.8.5
 
+      - name: Log Java Version and jpackage Availability
+        run: |
+          java -version
+          which jpackage
+
       - name: Create Directories
         run: |
           mkdir -p artifacts
@@ -65,7 +70,7 @@ jobs:
             --main-jar HelloWorld.jar \
             --main-class com.example.MainClass \
             --type app-image \
-            --dest packages
+            --dest packages || (echo "jpackage failed" && exit 1)
 
       - name: Create EXE using jpackage
         run: |
@@ -75,7 +80,7 @@ jobs:
             --main-jar HelloWorld.jar \
             --main-class com.example.MainClass \
             --type exe \
-            --dest packages
+            --dest packages || (echo "jpackage failed" && exit 1)
 
       - name: Upload Executable File
         uses: actions/upload-artifact@v2
