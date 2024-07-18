@@ -30,7 +30,7 @@ jobs:
           ls -l /opt/exe4j/bin/
 
       - name: Set Exe4j Path
-        run: echo "EXE4J_PATH=/opt/exe4j/bin/exe4j" >> $GITHUB_ENV
+        run: echo "EXE4J_PATH=/opt/exe4j/bin/exe4jc" >> $GITHUB_ENV
 
       - name: Print Exe4j Path
         run: echo $EXE4J_PATH
