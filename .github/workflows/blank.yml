@@ -24,17 +24,16 @@ jobs:
 
       - name: Install Exe4j
         run: |
-          # wget https://download-gcdn.ej-technologies.com/exe4j/exe4j_linux_9_0.tar.gz
           wget https://download.ej-technologies.com/exe4j/exe4j_unix_9_0.tar.gz
           tar -xzf exe4j_unix_9_0.tar.gz
           sudo mv exe4j9 /opt/exe4j
-          ls -l /opt/exe4j/
+          ls -l /opt/exe4j/bin/
 
       - name: Set Exe4j Path
-        run: echo "EXE4J_PATH=/opt/exe4j/bin/exe4j-config" >> $GITHUB_ENV
+        run: echo "EXE4J_PATH=/opt/exe4j/bin/exe4jconfig" >> $GITHUB_ENV
 
       - name: Build Project and Create Executable
-        run: mvn -D exe4j.path=$EXE4J_PATH clean package
+        run: mvn -Dexe4j.path=$EXE4J_PATH clean package
 
       - name: Upload Executable File
         uses: actions/upload-artifact@v2
