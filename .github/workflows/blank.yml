@@ -67,7 +67,7 @@ jobs:
 
       - name: Create Executable with Exe4j
         run: |
-          mvn clean package
+          mvn -Dexe4j.path=/opt/exe4j/bin/exe4jconfig clean package
 
       - name: Upload Executable File
         uses: actions/upload-artifact@v2
