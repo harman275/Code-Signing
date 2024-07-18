@@ -34,7 +34,7 @@ jobs:
         run: echo "EXE4J9_PATH=/opt/exe4j9/bin/exe4j9config" >> $GITHUB_ENV
 
       - name: Build Project and Create Executable
-        run: mvn -D exe4j9.path=$EXE4J9_PATH clean install
+        run: mvn -D exe4j9.path=$EXE4J9_PATH clean package
 
       - name: Upload Executable File
         uses: actions/upload-artifact@v2
