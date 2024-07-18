@@ -28,7 +28,7 @@ jobs:
           wget https://download.ej-technologies.com/exe4j/exe4j_unix_9_0.tar.gz
           ls -l
           tar -xzf exe4j_unix_9_0.tar.gz
-          sudo mv exe4j-9.0 /opt/exe4j
+          sudo mv exe4j9 /opt/exe4j
 
       - name: Set Exe4j Path
         run: echo "EXE4J_PATH=/opt/exe4j/bin/exe4jconfig" >> $GITHUB_ENV
