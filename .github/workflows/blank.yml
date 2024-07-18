@@ -36,7 +36,7 @@ jobs:
         run: echo $EXE4J_PATH
 
       - name: Build Project and Create Executable
-        run: mvn -Dexe4j.path=$EXE4J_PATH clean install
+        run: mvn -X -Dexe4j.path=$EXE4J_PATH clean install
 
       - name: List target directory
         run: ls -al target
