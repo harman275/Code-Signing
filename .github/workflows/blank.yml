@@ -62,9 +62,12 @@ jobs:
           tar -xzf exe4j_linux_9_0.tar.gz
           sudo mv exe4j-9.0 /opt/exe4j
 
+      - name: Set Exe4j Path
+        run: echo "::set-env name=EXE4J_PATH::/opt/exe4j/bin/exe4jconfig"
+
       - name: Create Executable with Exe4j
         run: |
-          /opt/exe4j/bin/exe4jconfig -c exe4j-config.xml
+          mvn -Dexe4j.path=/opt/exe4j/bin/exe4jconfig clean package
 
       - name: Upload Executable File
         uses: actions/upload-artifact@v2
