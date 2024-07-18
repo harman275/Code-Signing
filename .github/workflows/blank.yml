@@ -63,8 +63,4 @@ jobs:
           name: HelloWorld.jar
           path: packages/HelloWorld.jar
 
-      # - name: Upload Signed Files
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: HelloWorld.jar
-      #     path: packages/HelloWorld.jar
+
