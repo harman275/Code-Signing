@@ -31,7 +31,7 @@ jobs:
           sudo mv exe4j9 /opt/exe4j
 
       - name: Set Exe4j Path
-        run: echo "EXE4J_PATH=/opt/exe4j/bin/exe4jconfig" >> $GITHUB_ENV
+        run: echo "EXE4J_PATH=/opt/exe4j/bin/exe4j-config" >> $GITHUB_ENV
 
       - name: Build Project and Create Executable
         run: mvn -D exe4j.path=$EXE4J_PATH clean package
