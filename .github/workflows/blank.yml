@@ -57,7 +57,22 @@ jobs:
         run: |
           jarsigner -verify packages/HelloWorld.jar
 
+      - name: Install jpackage
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jpackage
+
       - name: Create Executable
+        run: |
+          jpackage \
+            --input packages \
+            --name HelloWorld \
+            --main-jar HelloWorld.jar \
+            --main-class com.example.MainClass \
+            --type app-image \
+            --dest packages
+
+      - name: Create EXE using jpackage
         run: |
           jpackage \
             --input packages \
