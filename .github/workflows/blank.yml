@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-      
+
 env:
   PROJECT_NAME: HelloWorld
   PROJECT_VERSION: 0.0.1
@@ -22,11 +22,6 @@ jobs:
           java-version: 17
           maven-version: 3.8.5
 
-      - name: Log Java Version and jpackage Availability
-        run: |
-          java -version
-          which jpackage
-
       - name: Create Directories
         run: |
           mkdir -p artifacts
@@ -35,8 +30,7 @@ jobs:
 
       - name: Build Java Project
         run: |
-          mvn clean install -f pom.xml
-          cp target/HelloWorld-0.0.1-SNAPSHOT.jar packages/HelloWorld.jar
+          mvn clean package
 
       - name: Generate Private Key
         run: |
@@ -56,34 +50,24 @@ jobs:
 
       - name: Sign JAR
         run: |
-          jarsigner -keystore certs/keystore.jks -storepass changeit -keypass changeit packages/HelloWorld.jar myalias
+          jarsigner -keystore certs/keystore.jks -storepass changeit -keypass changeit target/HelloWorld-0.0.1-SNAPSHOT.jar myalias
 
       - name: Verify JAR Signature
         run: |
-          jarsigner -verify packages/HelloWorld.jar
+          jarsigner -verify target/HelloWorld-0.0.1-SNAPSHOT.jar
 
-      - name: Create Executable
+      - name: Install Exe4j
         run: |
-          jpackage \
-            --input packages \
-            --name HelloWorld \
-            --main-jar HelloWorld.jar \
-            --main-class com.example.MainClass \
-            --type app-image \
-            --dest packages || (echo "jpackage failed" && exit 1)
+          wget https://download-gcdn.ej-technologies.com/exe4j/exe4j_linux_9_0.tar.gz
+          tar -xzf exe4j_linux_9_0.tar.gz
+          sudo mv exe4j-9.0 /opt/exe4j
 
-      - name: Create EXE using jpackage
+      - name: Create Executable with Exe4j
         run: |
-          jpackage \
-            --input packages \
-            --name HelloWorld \
-            --main-jar HelloWorld.jar \
-            --main-class com.example.MainClass \
-            --type exe \
-            --dest packages || (echo "jpackage failed" && exit 1)
+          /opt/exe4j/bin/exe4jconfig -c exe4j-config.xml
 
       - name: Upload Executable File
         uses: actions/upload-artifact@v2
         with:
           name: HelloWorld.exe
-          path: packages/HelloWorld.exe
+          path: target/HelloWorld.exe
