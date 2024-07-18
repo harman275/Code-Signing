@@ -14,7 +14,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <exe4j9.path>${env.EXE4J9_PATH}</exe4j9.path> <!-- Ensure this matches the environment variable name -->
+        <exe4j9.path>${env.EXE4J9_PATH}</exe4j.path> <!-- Ensure this matches the environment variable name -->
     </properties>
 
     <dependencies>
