@@ -63,11 +63,11 @@ jobs:
           sudo mv exe4j-9.0 /opt/exe4j
 
       - name: Set Exe4j Path
-        run: echo "::set-env name=EXE4J_PATH::/opt/exe4j/bin/exe4jconfig"
+        run: echo "EXE4J_PATH=/opt/exe4j/bin/exe4jconfig" >> $GITHUB_ENV
 
       - name: Create Executable with Exe4j
         run: |
-          mvn -Dexe4j.path=/opt/exe4j/bin/exe4jconfig clean package
+          mvn clean package
 
       - name: Upload Executable File
         uses: actions/upload-artifact@v2
