@@ -27,16 +27,15 @@ jobs:
           wget https://download.ej-technologies.com/exe4j/exe4j_unix_9_0.tar.gz
           tar -xzf exe4j_unix_9_0.tar.gz
           sudo mv exe4j9 /opt/exe4j
-          ls -l /opt/exe4j/bin/
 
       - name: Set Exe4j Path
-        run: echo "EXE4J_PATH=/opt/exe4j/bin/exe4jc" >> $GITHUB_ENV
+        run: echo "EXE4J_PATH=/opt/exe4j/bin/exe4j" >> $GITHUB_ENV
 
       - name: Print Exe4j Path
         run: echo $EXE4J_PATH
 
       - name: Build Project and Create Executable
-        run: mvn -X -Dexe4j.path=$EXE4J_PATH clean install
+        run: mvn -Dexe4j.path=$EXE4J_PATH clean install
 
       - name: List target directory
         run: ls -al target
