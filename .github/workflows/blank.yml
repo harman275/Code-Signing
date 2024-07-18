@@ -9,9 +9,9 @@ env:
   PROJECT_VERSION: 0.0.1
 
 jobs:
-  build-and-sign-jar:
+  build-and-sign-exe:
     runs-on: ubuntu-latest
-    name: Code Signer on Java with Maven
+    name: Build and Sign Executable on Java with Maven
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -57,10 +57,18 @@ jobs:
         run: |
           jarsigner -verify packages/HelloWorld.jar
 
-      - name: Upload Signed JAR File
+      - name: Create Executable
+        run: |
+          jpackage \
+            --input packages \
+            --name HelloWorld \
+            --main-jar HelloWorld.jar \
+            --main-class com.example.MainClass \
+            --type exe \
+            --dest packages
+
+      - name: Upload Executable File
         uses: actions/upload-artifact@v2
         with:
-          name: HelloWorld.jar
-          path: packages/HelloWorld.jar
-
-
+          name: HelloWorld.exe
+          path: packages/HelloWorld.exe
