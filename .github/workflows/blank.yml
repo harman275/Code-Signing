@@ -114,6 +114,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Create Directories
+         run:|
+         mkdir -p MyProject
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
