@@ -1,53 +1,56 @@
-name: Maven Build and Sign
-on:
-  push:
-    branches:
-      - main
+# name: Maven Build and Sign
+# on:
+#   push:
+#     branches:
+#       - main
 
-env:
-  PROJECT_NAME: HelloWorld
-  PROJECT_VERSION: 0.0.1
+# env:
+#   PROJECT_NAME: HelloWorld
+#   PROJECT_VERSION: 0.0.1
 
-jobs:
-  build-and-sign-exe:
-    runs-on: ubuntu-latest
-    name: Build and Sign Executable on Java with Maven
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+# jobs:
+#   build-and-sign-exe:
+#     runs-on: ubuntu-latest
+#     name: Build and Sign Executable on Java with Maven
+#     steps:
+#       - name: Checkout Repository
+#         uses: actions/checkout@v2
 
-      - name: Setup Maven and Java
-        uses: s4u/setup-maven-action@v1.3.1
-        with:
-          java-version: 17
-          maven-version: 3.8.5
+#       - name: Setup Maven and Java
+#         uses: s4u/setup-maven-action@v1.3.1
+#         with:
+#           java-version: 17
+#           maven-version: 3.8.5
           
-      - name: Create Directories
-        run: |
-          mkdir -p artifacts
-          mkdir -p packages
-          mkdir -p certs
+#       - name: Create Directories
+#         run: |
+#           mkdir -p artifacts
+#           mkdir -p packages
+#           mkdir -p certs
 
 
-      - name: Install Exe4j
-        run: |
-          # wget https://download.ej-technologies.com/exe4j/exe4j_unix_9_0.tar.gz
-          wget https://download.ej-technologies.com/exe4j/exe4j_linux_9_0.deb
-          sudo dpkg -i exe4j_linux_9_0.deb || sudo apt-get install -f -y
-          # tar -xzf exe4j_linux_9_0.deb
-          sudo mv exe4j /opt/exe4j
+#       - name: Install Exe4j
+#         run: |
+#           # wget https://download.ej-technologies.com/exe4j/exe4j_unix_9_0.tar.gz
+#           wget https://download.ej-technologies.com/exe4j/exe4j_linux_9_0.deb
+#           sudo dpkg -i exe4j_linux_9_0.deb || sudo apt-get install -f -y
+#           # tar -xzf exe4j_linux_9_0.deb
+#           # sudo mv exe4j /opt/exe4j
 
-      - name: Set Exe4j Path
-        run: echo "EXE4J_PATH=/opt/exe4j/bin/exe4j" >> $GITHUB_ENV
+#       - name: Set Exe4j Path
+#         run: echo "EXE4J_PATH=/opt/exe4j/bin/exe4j" >> $GITHUB_ENV
 
-      - name: Print Exe4j Path
-        run: echo $EXE4J_PATH
+#       - name: Print Exe4j Path
+#         run: echo $EXE4J_PATH
 
-      - name: Build Project and Create Executable
-        run: |
-         mvn clean install -f pom.xml
-         mvn -D exe4j.path=$EXE4J_PATH clean package
-         # cp target/HelloWorld-0.0.1-SNAPSHOT.jar packages/HelloWorld.jar
+#       - name: Build Project and Create Executable
+#         run: |
+#          mvn clean install -f pom.xml
+#          mvn -D exe4j.path=$EXE4J_PATH clean package
+#          # cp target/HelloWorld-0.0.1-SNAPSHOT.jar packages/HelloWorld.jar
+
+
+
 
 
 
@@ -79,13 +82,56 @@ jobs:
 
          
 
-      - name: List target directory
-        run: ls -al target
+      # - name: List target directory
+      #   run: ls -al target
 
-      - name: Upload Executable File
-        uses: actions/upload-artifact@v2
-        with:
-          name: HelloWorld.exe
-          path: target/HelloWorld*.exe
-          # path: target/maven-archiver
+      # - name: Upload Executable File
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: HelloWorld.exe
+      #     path: target/HelloWorld*.exe
+      #     # path: target/maven-archiver
+
+
+
+
+
+name: .NET Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.0.x' # specify the .NET version you need
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --output ./output
+
+    - name: Publish
+      run: dotnet publish -c Release -r win-x64 --self-contained true -o ./publish
+
+    - name: Archive build output
+      uses: actions/upload-artifact@v3
+      with:
+        name: executable
+        path: ./publish
+
 
