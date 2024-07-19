@@ -117,20 +117,20 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.0.x' # specify the .NET version you need
+        dotnet-version: '6.0.x' # specify the .NET version you need
 
     - name: Restore, Build, and Publish
-        run:|
-          cd ./MyProject
-          dotnet restore
-          dotnet build --configuration Release --output ./output
-          dotnet publish -c Release -r win-x64 --self-contained true -o ./publish
-
+      run: |
+        cd ./MyProject
+        dotnet restore
+        dotnet build --configuration Release --output ./output
+        dotnet publish -c Release -r win-x64 --self-contained true -o ./publish
 
     - name: Archive build output
       uses: actions/upload-artifact@v3
       with:
         name: executable
-        path: ./publish
+        path: ./MyProject/publish
+
 
 
