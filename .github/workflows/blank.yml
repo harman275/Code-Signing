@@ -45,6 +45,31 @@ jobs:
          mvn -D exe4j.path=$EXE4J_PATH clean package
          cp target/HelloWorld-0.0.1-SNAPSHOT.jar packages/HelloWorld.jar
 
+
+
+      - name: Generate Private Key
+        run: |
+          openssl genpkey -algorithm RSA -out certs/private.key -pkeyopt rsa_keygen_bits:2048
+      - name: Generate CSR
+        run: |
+         # keytool -genkeypair -alias myalias -keyalg RSA -keysize 2048 -validity 3650 -storetype PKCS12 -keystore artifacts/keystore.p12 -storepass your_password -keypass your_password -dname "CN=Your Name, OU=Your Organization, O=Your Company, L=Your City, ST=Your State, C=Your Country"
+         #  openssl pkcs12 -in artifacts/keystore.p12 -out artifacts/keystore.jks -nodes -password pass:your_password
+          openssl req -new -key certs/private.key -out certs/request.csr -subj "/C=US/ST=California/L=San Francisco/O=Example Company/OU=IT Department/CN=example.com"
+          # openssl req -new -key certs/private.key -out certs/request.csr -subj "/C=US/ST=California/L=San Francisco/O=Example Company/OU=IT Department/CN=example.com"
+      - name: Self-Sign CSR to create self-signed certificate
+        run: |
+          openssl x509 -req -days 365 -in certs/request.csr -signkey certs/private.key -out certs/self-signed-certificate.crt
+      - name: Create Java Keystore
+        run: |
+          keytool -genkeypair -alias myalias -keyalg RSA -keysize 2048 -validity 3650 -keystore certs/keystore.jks -storepass changeit -keypass changeit -dname "CN=Your Name, OU=Your Organization, O=Your Company, L=Your City, ST=Your State, C=Your Country"
+      - name: Sign JAR
+
+
+
+
+
+         
+
       - name: List target directory
         run: ls -al target
 
@@ -52,6 +77,6 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: HelloWorld.exe
-          path: target/HelloWorld.exe
+          path: packages/HelloWorld.exe
           # path: target/maven-archiver
 
