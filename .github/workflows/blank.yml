@@ -119,8 +119,8 @@ jobs:
       with:
         dotnet-version: '8.0.x' # specify the .NET version you need
 
-    # - name: Restore dependencies
-    #   run: dotnet restore
+    - name: Restore dependencies
+      run: dotnet restore
 
     - name: Build
       run: dotnet build --configuration Release --output ./output
