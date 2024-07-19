@@ -119,14 +119,24 @@ jobs:
       with:
         dotnet-version: '8.0.x' # specify the .NET version you need
 
+    # - name: Restore dependencies
+    #   run: dotnet restore
+
+    # - name: Build
+    #   run: dotnet build --configuration Release --output ./output
+
+    # - name: Publish
+    #   run: dotnet publish -c Release -r win-x64 --self-contained true -o ./publish
+
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore ./MyProject/MyProject.csproj
 
     - name: Build
-      run: dotnet build --configuration Release --output ./output
+      run: dotnet build ./MyProject/MyProject.csproj --configuration Release --output ./output
 
     - name: Publish
-      run: dotnet publish -c Release -r win-x64 --self-contained true -o ./publish
+      run: dotnet publish ./MyProject/MyProject.csproj -c Release -r win-x64 --self-contained true -o ./publish
+
 
     - name: Archive build output
       uses: actions/upload-artifact@v3
