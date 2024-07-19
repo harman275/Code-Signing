@@ -35,7 +35,8 @@ jobs:
         run: echo $EXE4J_PATH
 
       - name: Build Project and Create Executable
-        run: mvn -D exe4j.path=$EXE4J_PATH clean package
+        run: |
+         mvn -D exe4j.path=$EXE4J_PATH clean package
          cp target/HelloWorld-0.0.1-SNAPSHOT.jar packages/HelloWorld.jar
 
       - name: List target directory
