@@ -62,7 +62,6 @@ jobs:
       - name: Create Java Keystore
         run: |
           keytool -genkeypair -alias myalias -keyalg RSA -keysize 2048 -validity 3650 -keystore certs/keystore.jks -storepass changeit -keypass changeit -dname "CN=Your Name, OU=Your Organization, O=Your Company, L=Your City, ST=Your State, C=Your Country"
-      - name: Sign JAR
 
 
 
