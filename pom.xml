@@ -57,7 +57,7 @@
                 <executions>
                     <execution>
                         <id>create-exe</id>
-                        <phase>package</phase>
+<!--                         <phase>package</phase> -->
                         <goals>
                             <goal>exec</goal>
                         </goals>
