@@ -28,10 +28,6 @@ jobs:
           mkdir -p packages
           mkdir -p certs
 
-      # - name: Download exe4j
-      #   run: |
-      #     curl -LO https://example.com/path/to/exe4j_linux_9_0.deb
-
 
       - name: Install Exe4j
         run: |
@@ -39,7 +35,7 @@ jobs:
           wget https://download.ej-technologies.com/exe4j/exe4j_linux_9_0.deb
           sudo dpkg -i exe4j_linux_9_0.deb || sudo apt-get install -f -y
           # tar -xzf exe4j_linux_9_0.deb
-          # sudo mv exe4j9 /opt/exe4j
+          sudo mv exe4j9 /opt/exe4j
 
       - name: Set Exe4j Path
         run: echo "EXE4J_PATH=/opt/exe4j/bin/exe4j" >> $GITHUB_ENV
