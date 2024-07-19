@@ -1,3 +1,54 @@
+name: .NET Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: List files for debugging
+      run: ls -R
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x' # specify the .NET version you need
+
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./MyProject
+
+    - name: Build
+      run: dotnet build --configuration Release --output ./output
+      working-directory: ./MyProject
+
+    - name: Publish
+      run: dotnet publish -c Release -r win-x64 --self-contained true -o ./publish
+      working-directory: ./MyProject
+
+    - name: Archive build output
+      uses: actions/upload-artifact@v3
+      with:
+        name: executable
+        path: ./MyProject/publish
+
+
+
+
+
+
+
+
 # name: Maven Build and Sign
 # on:
 #   push:
@@ -96,44 +147,44 @@
 
 
 
-name: .NET Build
+# name: .NET Build
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v3
 
-    - name: Create Directories
-      run: mkdir -p MyProject
+#     - name: Create Directories
+#       run: mkdir -p MyProject
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0.x' # specify the .NET version you need
+#     - name: Setup .NET
+#       uses: actions/setup-dotnet@v3
+#       with:
+#         dotnet-version: '8.0.x' # specify the .NET version you need
 
-    - name: Restore, Build, and Publish
-      run: |
-        cd ./MyProject
-        dotnet restore
-        dotnet build --configuration Release --output ./output
-        dotnet publish -c Release -r win-x64 --self-contained true -o ./publish
+#     - name: Restore, Build, and Publish
+#       run: |
+#         cd ./MyProject
+#         dotnet restore
+#         dotnet build --configuration Release --output ./output
+#         dotnet publish -c Release -r win-x64 --self-contained true -o ./publish
 
-    - name: Archive build output
-      uses: actions/upload-artifact@v3
-      with:
-        name: executable
-        path: ./MyProject/publish
+#     - name: Archive build output
+#       uses: actions/upload-artifact@v3
+#       with:
+#         name: executable
+#         path: ./MyProject/publish
 
 
 
