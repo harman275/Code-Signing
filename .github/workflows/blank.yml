@@ -21,6 +21,12 @@ jobs:
         with:
           java-version: 17
           maven-version: 3.8.5
+          
+      - name: Create Directories
+        run: |
+          mkdir -p artifacts
+          mkdir -p packages
+          mkdir -p certs
 
       - name: Install Exe4j
         run: |
