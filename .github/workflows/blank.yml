@@ -19,6 +19,9 @@ jobs:
     - name: List files for debugging
       run: ls -R
 
+    - name: Create Directories
+      run: mkdir -p MyProject
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
