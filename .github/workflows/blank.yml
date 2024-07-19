@@ -19,31 +19,26 @@ jobs:
     - name: List files for debugging
       run: ls -R
 
-    - name: Create Directories
-      run: mkdir -p MyProject
-
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x' # specify the .NET version you need
 
     - name: Restore dependencies
-      run: dotnet restore
-      working-directory: ./MyProject
+      run: dotnet restore MySolution.sln
 
     - name: Build
-      run: dotnet build --configuration Release --output ./output
-      working-directory: ./MyProject
+      run: dotnet build MySolution.sln --configuration Release --output ./output
 
     - name: Publish
-      run: dotnet publish -c Release -r win-x64 --self-contained true -o ./publish
-      working-directory: ./MyProject
+      run: dotnet publish MyProject/MyProject.csproj -c Release -r win-x64 --self-contained true -o ./publish
 
     - name: Archive build output
       uses: actions/upload-artifact@v3
       with:
         name: executable
         path: ./MyProject/publish
+
 
 
 
