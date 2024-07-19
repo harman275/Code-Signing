@@ -62,7 +62,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>${exe4j.path}</executable>
+                            <executable>${exe4j.path}/exe4j</executable>
                             <arguments>
                                 <argument>-c</argument>
                                 <argument>exe4j-config.xml</argument>
