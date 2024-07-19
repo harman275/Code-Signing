@@ -128,14 +128,21 @@ jobs:
     # - name: Publish
     #   run: dotnet publish -c Release -r win-x64 --self-contained true -o ./publish
 
-    - name: Restore dependencies
-      run: dotnet restore ./MyProject/MyProject.csproj
+    # - name: Restore dependencies
+    #   run: dotnet restore ./MyProject/MyProject.csproj
 
-    - name: Build
-      run: dotnet build ./MyProject/MyProject.csproj --configuration Release --output ./output
+    # - name: Build
+    #   run: dotnet build ./MyProject/MyProject.csproj --configuration Release --output ./output
 
-    - name: Publish
-      run: dotnet publish ./MyProject/MyProject.csproj -c Release -r win-x64 --self-contained true -o ./publish
+    # - name: Publish
+    #   run: dotnet publish ./MyProject/MyProject.csproj -c Release -r win-x64 --self-contained true -o ./publish
+  
+    - name: Restore, Build, and Publish
+        run:|
+              cd ./MyProject
+              dotnet restore
+              dotnet build --configuration Release --output ./output
+              dotnet publish -c Release -r win-x64 --self-contained true -o ./publish
 
 
     - name: Archive build output
