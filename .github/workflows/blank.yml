@@ -30,8 +30,9 @@ jobs:
 
       - name: Install Exe4j
         run: |
-          wget https://download.ej-technologies.com/exe4j/exe4j_unix_9_0.tar.gz
-          tar -xzf exe4j_unix_9_0.tar.gz
+          # wget https://download.ej-technologies.com/exe4j/exe4j_unix_9_0.tar.gz
+          wget https://download.ej-technologies.com/exe4j/exe4j_linux_9_0.deb
+          tar -xzf exe4j_linux_9_0.deb
           sudo mv exe4j9 /opt/exe4j
 
       - name: Set Exe4j Path
