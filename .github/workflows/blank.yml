@@ -45,4 +45,5 @@ jobs:
         with:
           name: HelloWorld.exe
           # path: target/HelloWorld.exe
-          path: target/HelloWorld-0.0.1-SNAPSHOT.jar
+          path: target/maven-archiver
+
