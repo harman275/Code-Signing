@@ -53,7 +53,7 @@ jobs:
 
     - name: Sign the executable
       run: |
-        osslsigncode sign -pkcs12 certificate.pfx -pass password -in ./publish/myexecutable.exe -out ./publish/myexecutable_signed.exe
+        osslsigncode sign -pkcs12 certificate.pfx -pass password -in ./publish/ -out ./publish/myexecutable_signed.exe
 
         
     - name: Archive build output
