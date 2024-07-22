@@ -53,14 +53,14 @@ jobs:
 
     - name: Sign the executable
       run: |
-        osslsigncode sign -pkcs12 certificate.pfx -pass password -in ./publish/myexecutable.exe -out ./publish/myexecutable_signed.exe
+        osslsigncode sign -pkcs12 certificate.pfx -pass password -in ./myexecutable.exe -out ./myexecutable_signed.exe
 
         
     - name: Archive build output
       uses: actions/upload-artifact@v3
       with:
         name: executable
-        path: ./publish/myexecutable_signed.exe
+        path: ./myexecutable_signed.exe
 
 
 
