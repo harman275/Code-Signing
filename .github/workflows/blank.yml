@@ -33,11 +33,66 @@ jobs:
     - name: Publish
       run: dotnet publish MyProject.csproj -c Release -r win-x64 --self-contained true -o ./publish
 
+    - name: Generate self-signed certificate
+      run: |
+        openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj "/C=US/ST=YourState/L=YourCity/O=YourOrg/OU=YourDept/CN=yourdomain.com" -keyout mykey.pem -out mycert.pem
+        openssl pkcs12 -export -out mycert.pfx -inkey mykey.pem -in mycert.pem -passout pass:yourpassword
+
+    - name: Install signcode
+      run: sudo apt-get install -y libcurl4-openssl-dev libssl-dev && sudo apt-get install -y mono-devel
+
+    - name: Sign the application
+      run: signcode sign -certs mycert.pfx -pass yourpassword -t http://timestamp.digicert.com -in ./publish/MyApp.exe -out ./publish/MyApp-signed.exe
+
     - name: Archive build output
       uses: actions/upload-artifact@v3
       with:
         name: executable
         path: ./publish
+
+
+
+
+# name: .NET Build
+
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v3
+
+#     - name: List files for debugging
+#       run: ls -R
+
+#     - name: Setup .NET
+#       uses: actions/setup-dotnet@v3
+#       with:
+#         dotnet-version: '8.0.x' # specify the .NET version you need
+
+#     - name: Restore dependencies
+#       run: dotnet restore MySolution.sln
+
+#     - name: Build
+#       run: dotnet build MySolution.sln --configuration Release --output ./output
+
+#     - name: Publish
+#       run: dotnet publish MyProject.csproj -c Release -r win-x64 --self-contained true -o ./publish
+
+#     - name: Archive build output
+#       uses: actions/upload-artifact@v3
+#       with:
+#         name: executable
+#         path: ./publish
 
 
 
