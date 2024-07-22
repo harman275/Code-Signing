@@ -33,12 +33,34 @@ jobs:
     - name: Publish
       run: dotnet publish MyProject.csproj -c Release -r win-x64 --self-contained true -o ./publish
 
+    - name: Install OpenSSL and osslsigncode
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y openssl osslsigncode
+
+    - name: Generate private key and CSR
+      run: |
+        openssl genpkey -algorithm RSA -out private_key.pem
+        openssl req -new -key private_key.pem -out mycsr.csr -subj "/C=US/ST=State/L=City/O=Organization/OU=OrgUnit/CN=example.com"
+
+    - name: Generate self-signed certificate
+      run: |
+        openssl x509 -req -days 30 -in mycsr.csr -signkey private_key.pem -out selfsigned_certificate.pem
+
+    - name: Convert PEM to PFX
+      run: |
+        openssl pkcs12 -export -out certificate.pfx -inkey private_key.pem -in selfsigned_certificate.pem -passout pass:password
+
+    - name: Sign the executable
+      run: |
+        osslsigncode sign -pkcs12 certificate.pfx -pass password -in ./MyProject/publish/myexecutable.exe -out ./MyProject/publish/myexecutable_signed.exe
+
+        
     - name: Archive build output
       uses: actions/upload-artifact@v3
       with:
         name: executable
-        path: ./publish
-
+        path: ./publish/myexecutable_signed.exe
 
 
 
