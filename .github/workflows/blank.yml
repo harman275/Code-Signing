@@ -1,210 +1,54 @@
-name: .NET Build
+name: .NET CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
   build:
+
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: List files for debugging
-      run: ls -R
-
-    - name: Setup .NET
+    - name: Set up .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.0.x' # specify the .NET version you need
+        dotnet-version: '6.0.x' # Adjust the version as needed
 
-    - name: Restore dependencies
-      run: dotnet restore MySolution.sln
+    - name: Install dependencies
+      run: dotnet restore
 
-    - name: Build
-      run: dotnet build MySolution.sln --configuration Release --output ./output
+    - name: Build project
+      run: dotnet build --configuration Release --no-restore
 
-    - name: Publish
-      run: dotnet publish MyProject.csproj -c Release -r win-x64 --self-contained true -o ./publish
+    - name: Publish project
+      run: dotnet publish -c Release -o out
 
-    - name: Install OpenSSL and osslsigncode
+    - name: Generate private key and self-signed certificate
       run: |
-        sudo apt-get update
-        sudo apt-get install -y openssl osslsigncode
+        openssl req -newkey rsa:2048 -nodes -keyout private.key -x509 -days 90 -out code_signing.crt -subj "/C=US/ST=State/L=City/O=Organization/OU=Unit/CN=yourdomain.com"
 
-    - name: Generate private key and CSR
+    - name: Create PKCS#12 keystore
+      run: openssl pkcs12 -export -in code_signing.crt -inkey private.key -out code_signing.p12 -name code_signing -passout pass:yourpassphrase
+
+    - name: Convert PKCS#12 to PFX (Personal Information Exchange)
+      run: openssl pkcs12 -in code_signing.p12 -out code_signing.pfx -passin pass:yourpassphrase -passout pass:yourpassphrase
+
+    - name: Sign executable
       run: |
-        openssl genpkey -algorithm RSA -out private_key.pem
-        openssl req -new -key private_key.pem -out mycsr.csr -subj "/C=US/ST=State/L=City/O=Organization/OU=OrgUnit/CN=example.com"
+        sudo apt-get install -y signtool
+        signtool sign /f code_signing.pfx /p yourpassphrase /t http://timestamp.digicert.com out/yourapplication.exe
 
-    - name: Generate self-signed certificate
-      run: |
-        openssl x509 -req -days 30 -in mycsr.csr -signkey private_key.pem -out selfsigned_certificate.pem
+    - name: Verify signature
+      run: signtool verify /pa /v out/yourapplication.exe
 
-    - name: Convert PEM to PFX
-      run: |
-        openssl pkcs12 -export -out certificate.pfx -inkey private_key.pem -in selfsigned_certificate.pem -passout pass:password
-
-    - name: Sign the executable
-      run: |
-        osslsigncode sign -pkcs12 certificate.pfx -pass password -in ./publish/ -out ./publish/myexecutable_signed.exe
-
-        
-    - name: Archive build output
+    - name: Upload signed executable
       uses: actions/upload-artifact@v3
       with:
-        name: executable
-        path: ./publish/myexecutable_signed.exe
-
-
-
-
-
-
-
-
-# name: Maven Build and Sign
-# on:
-#   push:
-#     branches:
-#       - main
-
-# env:
-#   PROJECT_NAME: HelloWorld
-#   PROJECT_VERSION: 0.0.1
-
-# jobs:
-#   build-and-sign-exe:
-#     runs-on: ubuntu-latest
-#     name: Build and Sign Executable on Java with Maven
-#     steps:
-#       - name: Checkout Repository
-#         uses: actions/checkout@v2
-
-#       - name: Setup Maven and Java
-#         uses: s4u/setup-maven-action@v1.3.1
-#         with:
-#           java-version: 17
-#           maven-version: 3.8.5
-          
-#       - name: Create Directories
-#         run: |
-#           mkdir -p artifacts
-#           mkdir -p packages
-#           mkdir -p certs
-
-
-#       - name: Install Exe4j
-#         run: |
-#           # wget https://download.ej-technologies.com/exe4j/exe4j_unix_9_0.tar.gz
-#           wget https://download.ej-technologies.com/exe4j/exe4j_linux_9_0.deb
-#           sudo dpkg -i exe4j_linux_9_0.deb || sudo apt-get install -f -y
-#           # tar -xzf exe4j_linux_9_0.deb
-#           # sudo mv exe4j /opt/exe4j
-
-#       - name: Set Exe4j Path
-#         run: echo "EXE4J_PATH=/opt/exe4j/bin/exe4j" >> $GITHUB_ENV
-
-#       - name: Print Exe4j Path
-#         run: echo $EXE4J_PATH
-
-#       - name: Build Project and Create Executable
-#         run: |
-#          mvn clean install -f pom.xml
-#          mvn -D exe4j.path=$EXE4J_PATH clean package
-#          # cp target/HelloWorld-0.0.1-SNAPSHOT.jar packages/HelloWorld.jar
-
-
-
-
-
-
-      # - name: Generate Private Key
-      #   run: |
-      #     openssl genpkey -algorithm RSA -out certs/private.key -pkeyopt rsa_keygen_bits:2048
-      # - name: Generate CSR
-      #   run: |
-      #    # keytool -genkeypair -alias myalias -keyalg RSA -keysize 2048 -validity 3650 -storetype PKCS12 -keystore artifacts/keystore.p12 -storepass your_password -keypass your_password -dname "CN=Your Name, OU=Your Organization, O=Your Company, L=Your City, ST=Your State, C=Your Country"
-      #    #  openssl pkcs12 -in artifacts/keystore.p12 -out artifacts/keystore.jks -nodes -password pass:your_password
-      #     openssl req -new -key certs/private.key -out certs/request.csr -subj "/C=US/ST=California/L=San Francisco/O=Example Company/OU=IT Department/CN=example.com"
-      #     # openssl req -new -key certs/private.key -out certs/request.csr -subj "/C=US/ST=California/L=San Francisco/O=Example Company/OU=IT Department/CN=example.com"
-      # - name: Self-Sign CSR to create self-signed certificate
-      #   run: |
-      #     openssl x509 -req -days 365 -in certs/request.csr -signkey certs/private.key -out certs/self-signed-certificate.crt
-      # - name: Create Java Keystore
-      #   run: |
-      #     keytool -genkeypair -alias myalias -keyalg RSA -keysize 2048 -validity 3650 -keystore certs/keystore.jks -storepass changeit -keypass changeit -dname "CN=Your Name, OU=Your Organization, O=Your Company, L=Your City, ST=Your State, C=Your Country"
-
-      # - name: Sign Executable
-      #   if: success() && env.SIGNING_CERTIFICATE && env.SIGNING_PASSWORD # Check if signing is configured
-      #   run: |
-      #     osslsigncode sign -certs $SIGNING_CERTIFICATE -key $SIGNING_KEY -pass $SIGNING_PASSWORD \
-      #                       -in target/HelloWorld.exe -out target/HelloWorld-signed.exe
-
-
-
-
-
-         
-
-      # - name: List target directory
-      #   run: ls -al target
-
-      # - name: Upload Executable File
-      #   uses: actions/upload-artifact@v2
-      #   with:
-      #     name: HelloWorld.exe
-      #     path: target/HelloWorld*.exe
-      #     # path: target/maven-archiver
-
-
-
-
-
-# name: .NET Build
-
-# on:
-#   push:
-#     branches:
-#       - main
-#   pull_request:
-#     branches:
-#       - main
-
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#     - name: Checkout code
-#       uses: actions/checkout@v3
-
-#     - name: Create Directories
-#       run: mkdir -p MyProject
-
-#     - name: Setup .NET
-#       uses: actions/setup-dotnet@v3
-#       with:
-#         dotnet-version: '8.0.x' # specify the .NET version you need
-
-#     - name: Restore, Build, and Publish
-#       run: |
-#         cd ./MyProject
-#         dotnet restore
-#         dotnet build --configuration Release --output ./output
-#         dotnet publish -c Release -r win-x64 --self-contained true -o ./publish
-
-#     - name: Archive build output
-#       uses: actions/upload-artifact@v3
-#       with:
-#         name: executable
-#         path: ./MyProject/publish
-
-
-
+        name: yourapplication-signed
+        path: out/yourapplication.exe
