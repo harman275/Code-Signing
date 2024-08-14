@@ -46,7 +46,7 @@ jobs:
 
     - name: Generate self-signed certificate
       run: |
-        openssl x509 -req -days 30 -in mycsr.csr -signkey private_key.pem -out selfsigned_certificate.pem
+        openssl x509 -req -days 365 -in mycsr.csr -signkey private_key.pem -out selfsigned_certificate.pem
 
     - name: Convert PEM to PFX
       run: |
