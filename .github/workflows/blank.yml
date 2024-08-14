@@ -51,6 +51,7 @@ jobs:
     - name: Convert PEM to PFX
       run: |
         openssl pkcs12 -export -out certificate.pfx -inkey private_key.pem -in selfsigned_certificate.pem -passout pass:password
+        ls ./publish/
 
     - name: Sign the executable
       run: |
